@@ -2,7 +2,7 @@
 ## Title: Battle Chicken auto swap
 ## Notes: Swaps trinkets automatically
 ## Author: Agset
-## Version: 1.0
+## Version: 1.1
 
 TrinketSwap.xml
 TrinketSwap.lua
