@@ -47,7 +47,7 @@
                     </Anchors>
                     <Color r="1" g="1" b="0" a="1"/> <!-- Yellow color -->
                     <FontHeight>
-                        <AbsValue val="20"/> <!-- Twice the normal size -->
+                        <AbsValue val="40"/> <!-- Four times the normal size -->
                     </FontHeight>
                     <Shadow>
                         <Color r="0" g="0" b="0" a="1"/> <!-- Black shadow -->
