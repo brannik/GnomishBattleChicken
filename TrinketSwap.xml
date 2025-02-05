@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Frame name="TrinketSwapIconFrame" parent="UIParent" hidden="false" movable="true" clampedToScreen="true">
+        <Size>
+            <AbsDimension x="50" y="50"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER">
+                <Offset>
+                    <AbsDimension x="-200" y="0"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="TrinketSwapIconTexture">
+                    <Size>
+                        <AbsDimension x="50" y="50"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Cooldown name="TrinketSwapCooldown" drawEdge="true">
+                    <Size>
+                        <AbsDimension x="50" y="50"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER"/>
+                    </Anchors>
+                </Cooldown>
+                <FontString name="TrinketSwapUseText" inherits="GameFontNormalSmall" justifyH="CENTER">
+                    <Anchors>
+                        <Anchor point="BOTTOM" relativeTo="TrinketSwapIconTexture" relativePoint="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <Color r="0" g="1" b="0" a="1"/> <!-- Green color -->
+                    <Text>USE</Text>
+                </FontString>
+                <FontString name="TrinketSwapCooldownText" inherits="GameFontNormalLarge" justifyH="CENTER">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeTo="TrinketSwapIconTexture" relativePoint="CENTER"/>
+                    </Anchors>
+                    <Color r="1" g="1" b="0" a="1"/> <!-- Yellow color -->
+                    <FontHeight>
+                        <AbsValue val="20"/> <!-- Twice the normal size -->
+                    </FontHeight>
+                    <Shadow>
+                        <Color r="0" g="0" b="0" a="1"/> <!-- Black shadow -->
+                        <Offset>
+                            <AbsDimension x="1" y="-1"/>
+                        </Offset>
+                    </Shadow>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad>
+                self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+                self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
+                self:RegisterEvent("PLAYER_LOGIN")
+                self:SetScript("OnEnter", function()
+                    GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                    GameTooltip:SetText("Trinket Swap", 1, 1, 1)
+                    GameTooltip:AddLine("Shift + Left Click: Move Icon", 1, 1, 1)
+                    GameTooltip:AddLine("Left Click: Equip Chicken Trinket", 1, 1, 1)
+                    GameTooltip:Show()
+                end)
+                self:SetScript("OnLeave", function()
+                    GameTooltip:Hide()
+                end)
+            </OnLoad>
+            <OnEvent>
+                if event == "PLAYER_EQUIPMENT_CHANGED" and arg1 == 13 then
+                    TrinketSwap_UpdateIcon()
+                elseif event == "ACTIONBAR_UPDATE_COOLDOWN" then
+                    TrinketSwap_UpdateCooldown()
+                elseif event == "PLAYER_LOGIN" then
+                    TrinketSwap_UpdateIcon()
+                end
+            </OnEvent>
+            <OnMouseUp>
+                if IsShiftKeyDown() then
+                    self:StopMovingOrSizing()
+                else
+                    TrinketSwap_ExecuteActions()
+                end
+            </OnMouseUp>
+            <OnMouseDown>
+                if IsShiftKeyDown() then
+                    self:StartMoving()
+                end
+            </OnMouseDown>
+        </Scripts>
+    </Frame>
+</Ui>

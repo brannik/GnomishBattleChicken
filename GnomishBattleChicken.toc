@@ -1,0 +1,8 @@
+## Interface: 30300
+## Title: Battle Chicken auto swap
+## Notes: Swaps trinkets automatically
+## Author: Agset
+## Version: 1.0
+
+TrinketSwap.xml
+TrinketSwap.lua
