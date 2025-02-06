@@ -7,10 +7,23 @@ local originalTrinket = nil
 local isEquipped = false  -- Track if the chicken trinket is equipped
 local cooldownTimer = nil  -- Timer for updating cooldown text
 local pulseTimer = nil  -- Timer for pulsing the icon
+local pulseDirection = 1  -- Direction of pulsing (1 for increasing alpha, -1 for decreasing alpha)
 
 local function IsTrinketEquipped()
     local itemID = GetInventoryItemID("player", TRINKET_SLOT)
     return itemID == CHICKEN_ID
+end
+
+local function HasChickenTrinket()
+    for bag = 0, 4 do
+        for slot = 1, GetContainerNumSlots(bag) do
+            local itemID = GetContainerItemID(bag, slot)
+            if itemID == CHICKEN_ID then
+                return true
+            end
+        end
+    end
+    return IsTrinketEquipped()
 end
 
 local function FormatCooldown(remaining)
@@ -23,16 +36,20 @@ end
 
 local function PulseIcon()
     local alpha = TrinketSwapIconFrame:GetAlpha()
-    if alpha == 1 then
-        TrinketSwapIconFrame:SetAlpha(0.5)
-    else
-        TrinketSwapIconFrame:SetAlpha(1)
+    alpha = alpha + (pulseDirection * 0.05)
+    if alpha >= 1 then
+        alpha = 1
+        pulseDirection = -1
+    elseif alpha <= 0.5 then
+        alpha = 0.5
+        pulseDirection = 1
     end
+    TrinketSwapIconFrame:SetAlpha(alpha)
 end
 
 local function StartPulsing()
     if not pulseTimer then
-        pulseTimer = AceTimer:ScheduleRepeatingTimer(PulseIcon, 0.5)
+        pulseTimer = AceTimer:ScheduleRepeatingTimer(PulseIcon, 0.05)
     end
 end
 
@@ -101,18 +118,21 @@ end
 
 TrinketSwapFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 TrinketSwapFrame:RegisterEvent("PLAYER_LOGIN")
+TrinketSwapFrame:RegisterEvent("BAG_UPDATE")
 TrinketSwapFrame:SetScript("OnEvent", function(self, event, ...)
     if event == "PLAYER_REGEN_ENABLED" and isEquipped then
         RevertTrinket()
-    elseif event == "PLAYER_LOGIN" then
+    elseif event == "PLAYER_LOGIN" or event == "BAG_UPDATE" then
+        if HasChickenTrinket() then
+            TrinketSwapIconFrame:Show()
+        else
+            TrinketSwapIconFrame:Hide()
+        end
         TrinketSwap_UpdateIcon()
         TrinketSwap_UpdateCooldown()
         TrinketSwapUseText:Hide()
     end
 end)
-
-SLASH_EQUIPCHICKEN1 = "/equipchicken"
-SlashCmdList["EQUIPCHICKEN"] = EquipChicken
 
 SLASH_REVERT1 = "/revert"
 SlashCmdList["REVERT"] = RevertTrinket
